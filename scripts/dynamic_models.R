@@ -2,6 +2,9 @@
 # Examples from dynamic crop models book
 # Chapter 4
 
+################
+# euler integration method
+################
 exp_model <- function(a, Y0, duration = 40, dt = 1){
 	K = duration/dt + 1
 	Y = rep(NA, K)
@@ -35,7 +38,10 @@ legend("topleft",legend=c("Analytical Solution","Numerical
 Solution"),lwd=c(2,2),lty=c(1,2),col=c("black","black"),
 cex=0.75)
 
+################
 # improved euler method
+################
+
 exp_model2 <- function(a, Y0, duration = 40, dt = 1){
 	K = duration/dt + 1  # number of time steps
 	Y = rep(NA, K)      
@@ -74,6 +80,98 @@ lines(exp_model2(a, Y0, duration, dt), lty = 2, lwd = 3, col = "black")
 legend("topleft",legend=c("Analytical Solution","Numerical
 Solution"),lwd=c(2,2),lty=c(1,2),col=c("black","black"),
 cex=0.75)
+
+
+################
+# multiple state variables Euler
+################
+
+# this has a lot of state variables to keep track of
+pop_age_model <- function(rb = 3.5, mE = 0.017, rE = 0.172, m1 = 0.060,
+                          r12 = 0.217, m2 = 0.032, r23 = 0.313, m3 = 0.022, 
+                          r34 = 0.222, m4 = 0.020, r4P = 0.135, mP = 0.020, 
+                          rPA = 0.099, mA = 0.027, iA = 0, duration = 100,
+                          dt = 1){
+	# create matrix of state variables, one per column, nrows for length of sim
+	V = matrix(NA, ncol = 7, nrow = duration/dt+1, 
+		dimnames = list(NULL, c("E", "L1", "L2", "L3", "L4", "P", "A")))
+
+	# initialize state variables
+	V[1, ] <- c(5, 0, 0, 0, 0, 0, 0)
+
+	# simulation loop
+	for(k in 1:(duration/dt)){
+		# rates of change of state variables
+		dE = (rb*V[k, "A"] - rE*V[k, "E"] - mE*V[k, "E"])*dt       # egg stage
+		dL1 = (rE*V[k, "E"] - r12*V[k, "L1"] - m1*V[k, "L1"])*dt   # larvae1
+		dL2 = (r12*V[k, "L1"] - r23*V[k, "L2"] - m2*V[k, "L2"])*dt # larvae2
+		dL3 = (r23*V[k, "L2"] - r34*V[k, "L3"] - m3*V[k, "L3"])*dt # larvae3
+		dL4 = (r34*V[k, "L3"] - r4P*V[k, "L4"] - m4*V[k, "L4"])*dt # larvae4
+		dP = (r4P*V[k, "L4"] - rPA*V[k, "P"] - mP*V[k, "P"])*dt    # pupae
+		dA = (rPA*V[k, "P"] - mA*V[k, "A"])*dt                     # adult
+
+		dV = c(dE, dL1, dL2, dL3, dL4, dP, dA)
+		# update variables
+		V[k + 1, ] <- V[k, ] + dV
+	} 
+	# end simulation loop
+
+	return(round(as.data.frame(cbind(time = (1: (duration/dt + 1))*dt - dt, V)),
+		10))
+}
+# end pop_age_model
+
+
+# non-neat book code for plotting, do not feel like re-writting
+sim <- pop_age_model(rb=3.5,mE=0.017,rE=0.172,m1=0.060,
+r12=0.217,m2=0.032,r23=0.313,m3=0.022,r34=0.222,m4=0.020,
+r4P=0.135,mP=0.020,rPA=0.099,mA=0.027,iA=0,duration=40,dt=0.01)
+
+sim[sim$time==0,]
+sim[sim$time==10,]
+sim[sim$time==40,]
+
+graph.param=data.frame("V"=c("E","L1","L2","L3","L4","P","A"),
+"lty"=c(2,2,2,2,3,4,1), "lwd"=c(2,1,1,1,1,2,3))
+plot(c(0,max(sim$time)), c(0,max(sim[,-1])),type="n",xlab="time
+(day)",ylab="population density")
+null=sapply(c("E","L1","L2","L3","L4","P","A"),function(v)
+lines(sim$time,sim[,v],
+lty=graph.param[graph.param$V==v,"lty"],lwd=graph.param[graph.param$V==v,"lwd"]))
+legend("topright", legend=graph.param$V, lty=graph.param$lty,
+lwd = graph.param$lwd, cex=0.75)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
