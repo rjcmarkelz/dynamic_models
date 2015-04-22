@@ -143,14 +143,76 @@ lwd = graph.param$lwd, cex=0.75)
 
 
 
+################
+# multiple state variables Runge-Kutta
+################
+pop_age_model_rk <- function(rb = 3.5, mE = 0.017, rE = 0.172, m1 = 0.060,
+                          r12 = 0.217, m2 = 0.032, r23 = 0.313, m3 = 0.022, 
+                          r34 = 0.222, m4 = 0.020, r4P = 0.135, mP = 0.020, 
+                          rPA = 0.099, mA = 0.027, iA = 0, duration,
+                          dt, method){
+
+	# state variables starting values
+	E0 = 5
+	L10 = 0 
+	L20 = 0
+	L30 = 0
+	L40 = 0
+	P0  = 0
+	A0  = 0
+
+	# define ODEs
+	pred_prey_ode <- function(time, state, pars){
+		with(as.list(c(state, pars)), {
+			dE  = (rb*A - rE*E - mE*E)*dt
+			dL1 = (rE*E - r12*L1 - m1*L1)*dt
+			dL2 = (r12*L1 - r23*L2- m2*L2)*dt
+			dL3 = (r23*L1 - r34*L3- m3*L3)*dt
+			dL4 = (r34*L3 - r4P*L4 - m4*L4)*dt
+			dP  = (r4P*L4 - rPA*P - mP*P)*dt
+			dA= (rPA*P - mA*A+iA)*dt
+            
+            # return list
+            return(list(c(dE, dL1, dL2, dL3, dL4, dP, dA)))
+		})
+	}
+
+	# set the initial states in the ode and a call to ode
+	sim = ode(y = c(E = E0, L1 = L10, L2 = L20, L3 = L30, L4 = L40, P = P0,
+	        A = A0),
+	        times = seq(0, duration, by = dt), func = pred_prey_ode, 
+	        parms = c(rb, mE, rE, m1, r12, m2, r23, m3, r34, m4, r4P, mP, rPA, 
+	        	mA, iA),
+	        method = rkMethod(method))
+
+	return(as.data.frame(sim))
+
+}
+
+#load deSolve
+library(deSolve)
+
+sim2 <- pop_age_model_rk(rb = 3.5, mE = 0.017, rE = 0.172, m1 = 0.060,
+                         r12 = 0.217, m2 = 0.032, r23 = 0.313, m3 = 0.022, 
+                          r34 = 0.222, m4 = 0.020, r4P = 0.135, mP = 0.020, 
+                          rPA = 0.099, mA = 0.027, iA = 0, duration = 40,
+                          dt = 1, method = "rk4")
 
 
+sim2[sim2$time==0,]
+sim2[sim2$time==10,]
+sim2[sim2$time==40,]
 
-
-
-
-
-
+#compressed plotting code
+graph.param = data.frame("V"=c("E","L1","L2","L3","L4","P","A"),
+"lty"=c(2,2,2,2,3,4,1), "lwd"=c(2,1,1,1,1,2,3))
+plot(c(0,max(sim2$time)), c(0,max(sim2[,-1])),type="n",xlab="time
+(day)",ylab="population density")
+null=sapply(c("E","L1","L2","L3","L4","P","A"),function(v)
+lines(sim2$time,sim2[,v],
+lty=graph.param[graph.param$V==v,"lty"],lwd=graph.param[graph.param$V==v,"lwd"]))
+legend("topright", legend=graph.param$V, lty=graph.param$lty,
+lwd=graph.param$lwd, cex=0.75)
 
 
 
