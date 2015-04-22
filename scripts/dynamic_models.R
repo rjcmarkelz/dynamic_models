@@ -1,5 +1,6 @@
 
-# Examples from dynamic crop models book
+# Examples from dynamic crop models book, some code directly from book
+# some code modified by Cody Markelz
 # Chapter 4
 
 ################
@@ -203,7 +204,7 @@ sim2[sim2$time==0,]
 sim2[sim2$time==10,]
 sim2[sim2$time==40,]
 
-#compressed plotting code
+#compressed plotting code from book
 graph.param = data.frame("V"=c("E","L1","L2","L3","L4","P","A"),
 "lty"=c(2,2,2,2,3,4,1), "lwd"=c(2,1,1,1,1,2,3))
 plot(c(0,max(sim2$time)), c(0,max(sim2[,-1])),type="n",xlab="time
@@ -216,8 +217,47 @@ lwd=graph.param$lwd, cex=0.75)
 
 
 
+# simple maize model from chapter 1 using difference equations
 
+maize <- function (Tbase, RUE, K, alpha, LAImax, TTM, TTL, weather, sdate, 
+	ldate) {
 
+    TT <- rep(NA, ldate)
+    B <- rep(NA, ldate)
+    LAI <- rep(NA, ldate)
+    CumInt <- rep(NA, ldate)
+    TT[sdate] <- 0
+    B[sdate] <- 1
+    LAI[sdate] <- 0.01
+    CumInt[sdate] = 0
+
+    for (day in sdate:(ldate - 1)) {
+        dTT <- max((weather$Tmin[day] + weather$Tmax[day])/2 - Tbase, 0)
+
+        if (TT[day] <= TTM) {
+            dB <- RUE * (1 - exp(-K * LAI[day])) * weather$I[day]
+        }
+        else {
+            dB <- 0
+        }
+        if (TT[day] <= TTL) {
+            dLAI <- alpha * dTT * LAI[day] * max(LAImax - LAI[day], 
+                0)
+        }
+        else {
+            dLAI <- 0
+        }
+        TT[day + 1] <- TT[day] + dTT
+        B[day + 1] <- B[day] + dB
+        LAI[day + 1] <- LAI[day] + dLAI
+        CumInt[day + 1] = CumInt[day] + weather$I[day] * (1 - 
+            exp(-K * LAI[day]))
+    }
+
+    return(data.frame(day = sdate:ldate, TT = TT[sdate:ldate], 
+        LAI = LAI[sdate:ldate], B = B[sdate:ldate],
+        CumInt = CumInt[sdate:ldate]))
+}
 
 
 
