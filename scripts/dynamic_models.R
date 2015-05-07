@@ -171,7 +171,7 @@ pop_age_model_rk <- function(rb = 3.5, mE = 0.017, rE = 0.172, m1 = 0.060,
 			dL3 = (r23*L1 - r34*L3- m3*L3)*dt
 			dL4 = (r34*L3 - r4P*L4 - m4*L4)*dt
 			dP  = (r4P*L4 - rPA*P - mP*P)*dt
-			dA= (rPA*P - mA*A+iA)*dt
+			dA  = (rPA*P - mA*A+iA)*dt
             
             # return list
             return(list(c(dE, dL1, dL2, dL3, dL4, dP, dA)))
@@ -179,11 +179,9 @@ pop_age_model_rk <- function(rb = 3.5, mE = 0.017, rE = 0.172, m1 = 0.060,
 	}
 
 	# set the initial states in the ode and a call to ode
-	sim = ode(y = c(E = E0, L1 = L10, L2 = L20, L3 = L30, L4 = L40, P = P0,
-	        A = A0),
+	sim = ode(y = c(E = E0, L1 = L10, L2 = L20, L3 = L30, L4 = L40, P = P0, A = A0),
 	        times = seq(0, duration, by = dt), func = pred_prey_ode, 
-	        parms = c(rb, mE, rE, m1, r12, m2, r23, m3, r34, m4, r4P, mP, rPA, 
-	        	mA, iA),
+	        parms = c(rb, mE, rE, m1, r12, m2, r23, m3, r34, m4, r4P, mP, rPA, mA, iA),
 	        method = rkMethod(method))
 
 	return(as.data.frame(sim))
@@ -198,11 +196,19 @@ sim2 <- pop_age_model_rk(rb = 3.5, mE = 0.017, rE = 0.172, m1 = 0.060,
                           r34 = 0.222, m4 = 0.020, r4P = 0.135, mP = 0.020, 
                           rPA = 0.099, mA = 0.027, iA = 0, duration = 40,
                           dt = 1, method = "rk4")
+sim2
 
 
 sim2[sim2$time==0,]
 sim2[sim2$time==10,]
 sim2[sim2$time==40,]
+
+
+
+
+
+
+
 
 #compressed plotting code from book
 graph.param = data.frame("V"=c("E","L1","L2","L3","L4","P","A"),
@@ -226,32 +232,32 @@ maize <- function (Tbase, RUE, K, alpha, LAImax, TTM, TTL, weather, sdate,
     B <- rep(NA, ldate)
     LAI <- rep(NA, ldate)
     CumInt <- rep(NA, ldate)
+    
     TT[sdate] <- 0
     B[sdate] <- 1
     LAI[sdate] <- 0.01
     CumInt[sdate] = 0
 
     for (day in sdate:(ldate - 1)) {
+
         dTT <- max((weather$Tmin[day] + weather$Tmax[day])/2 - Tbase, 0)
 
         if (TT[day] <= TTM) {
             dB <- RUE * (1 - exp(-K * LAI[day])) * weather$I[day]
-        }
-        else {
+        } else {
             dB <- 0
         }
+
         if (TT[day] <= TTL) {
-            dLAI <- alpha * dTT * LAI[day] * max(LAImax - LAI[day], 
-                0)
-        }
-        else {
+            dLAI <- alpha * dTT * LAI[day] * max(LAImax - LAI[day], 0)
+        } else {
             dLAI <- 0
         }
-        TT[day + 1] <- TT[day] + dTT
-        B[day + 1] <- B[day] + dB
+
+        TT[day + 1] = TT[day] + dTT
+        B[day + 1]  B[day] + dB
         LAI[day + 1] <- LAI[day] + dLAI
-        CumInt[day + 1] = CumInt[day] + weather$I[day] * (1 - 
-            exp(-K * LAI[day]))
+        CumInt[day + 1] = CumInt[day] + weather$I[day]* (1 - exp(-K * LAI[day]))
     }
 
     return(data.frame(day = sdate:ldate, TT = TT[sdate:ldate], 
@@ -262,18 +268,8 @@ maize <- function (Tbase, RUE, K, alpha, LAImax, TTM, TTL, weather, sdate,
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
+	V = matrix(NA, ncol = 7, nrow = 50/2+1, 
+		dimnames = list(NULL, c("E", "L1", "L2", "L3", "L4", "P", "A")))
 
 
 
