@@ -22,10 +22,10 @@ growth3 <- function(t, state, parameters){
 		Wsht <- Wsh + fsh*Ws
 		Wrt  <- Wr + fr*Ws
 		Io <- J/h
-		P  <- 43200*(12/14)*Pc
+		P  <- 43200*(12/44)*Pc
 		Un   <- (sigN*Wr*Ns)/(1 + (Kc/C)*(1 + N/Kn))
 		lamsh <- (fr*N/(N + fn)) /( (fsh*C)/(C + fc) + (fr*N)/(N + fn) )
-		lamr <- (fsh*N/(N + fc)) /( (fsh*C)/(C + fc) + (fr*N)/(N + fn) )
+		lamr <- (fsh*C/(C + fc)) /( (fsh*C)/(C + fc) + (fr*N)/(N + fn) )
 		Gsh <- mu*C*N*lamsh*Wsh
 		Gr <- mu*C*N*lamr*Wr
 		Nu <- Num*(1 - Ep*C)
