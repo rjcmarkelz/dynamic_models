@@ -3,8 +3,9 @@ library(deSolve)
 
 # fertilzer model
 # Thornley and Johnson, 1990 page 467
+# something funky going on with LAI need to debug
 
-parameters <- c(Mc = 30, Mn = 62, J = 5*10^6, h = 43,000, Pc = 1.5, sigN = 3000,
+parameters <- c(Mc = 30, Mn = 62, J = 5*10^6, h = 43,000, Pc = 1, sigN = 3000,
     Kc = 0.05, Kn = 0.005, dr = 0.2, rhos = 1500, mu = 150, fc = 0.45, fn = 0.03, 
 	f1 = 0.7, Num = 25, Ep = 2.5, Y = 0.75, alphan = 0.5, gammash = 0.04, 
 	gammar = 0.01, Bn = 3*10^6)
@@ -14,9 +15,9 @@ times <- seq(0, 100, by = 0.5)
 growth3 <- function(t, state, parameters){
 	with(as.list(c(state, parameters)),{
 		Wg <- Wsh + Wr
-		Ws <- (Mc/12)*Wc + (Mn/14)*Wn
 		C  <- Wc/Wg
 		N  <- Wn/Wg
+		Ws <- (Mc/12)*Wc + (Mn/14)*Wn
 		fsh <- Wsh/Wg
 		fr  <- Wr/Wg
 		Wsht <- Wsh + fsh*Ws
@@ -35,7 +36,7 @@ growth3 <- function(t, state, parameters){
 		dWn <- Un - fn*(Gsh + Gr)
 		dWsh <- Gsh - gammash*Wsh
 		dWr  <- Gr - gammar*Wr
-		dL   <- Nu*f1*Gsh - gammash*L
+		dL   <- Nu*f1*Gsh - gammash*L # something wrong with the LAI 
 		dNs  <- Bn - (Un/dr*rhos)
 
 		#return rate of change
