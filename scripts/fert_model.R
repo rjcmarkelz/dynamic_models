@@ -6,17 +6,17 @@ library(deSolve)
 # something funky going on with LAI need to debug
 
 parameters <- c(Mc = 30, Mn = 62, J = 5*10^6,
-    h = 43,000, Pc = 100, sigN = 3000,
+    h = 43,000, Pc = 10, sigN = 3000,
     Kc = 0.05, Kn = 0.005, dr = 0.2, rhos = 1500, mu = 150, fc = 0.45, fn = 0.03, 
 	f1 = 0.7, Num = 25, Ep = 2.5, Y = 0.75, alphan = 0.5, gammash = 0.1, 
 	gammar = 0.01, Bn = 3*10^6)
-state <- c(Wc = 0.015, Wn = 0.004, Wsh = 0.2, Wr = 0.2, L = 0.8, Ns = 33.33*10^-4)
+state <- c(Wc = 0.015, Wn = 0.004, Wsh = 0.2, Wr = 0.2, L = 0.8, Ns = 400)
 
 
 Nu <- Num*(1 - Ep*C)
 
 
-times <- seq(0, 50, by = 1)
+times <- seq(0, 100, by = 1)
 growth3 <- function(t, state, parameters){
 	with(as.list(c(state, parameters)),{
 		Wg <- Wsh + Wr
@@ -54,6 +54,27 @@ out <- ode(y = state, times = times, func = growth3, parms = parameters)
 head(out)
 plot(out)
 
+head(out)
+plot(out)
+head(equal)
+library(ggplot2)
+library(reshape2)
+
+head(out)
+out <- as.data.frame(out[,c(1,3)])
+head(out)
+outmelt <- melt(out, id.vars = "time")
+head(outmelt)
+out$Wn <- out$Wn*0.01
+out
+outplot <- ggplot() + 
+  geom_line(data = out, aes(x = time, y = Wn), size = 3, color = "black") +
+  xlab("Time") + ylab("Canopy N (kg N m-2)") +
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(size=16),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(size=16))
+outplot
 
 
 
