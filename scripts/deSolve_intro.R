@@ -66,9 +66,14 @@ plot(out)
 
 # two plant growth model nested
 w <- w1 + w2
-parameters <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 0.2, b = 25)
+parameters1 <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 1, b = 25)
+parameters2 <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 1, b = 10)
+parameters3 <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 0.5, b = 25)
+parameters4 <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 0.2, b = 10)
+parameters5 <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 0.2, b = 25)
+parameters6 <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 0.9, b = 25)
 state <- c(w1 = 1, w2 = 1)
-times <- seq(0, 1000, by = 0.01)
+times <- seq(0, 1000, by = 0.1)
 
 growth3 <- function(t, state, parameters){
 	with(as.list(c(state, parameters)),{
@@ -83,7 +88,134 @@ growth3 <- function(t, state, parameters){
 		list(c(dw1, dw2))
 	})
 }
-out <- ode(y = state, times = times, func = growth3, parms = parameters)
+equal <- ode(y = state, times = times, func = growth3, parms = parameters1)
+plot(equal)
+
+equalclose <- ode(y = state, times = times, func = growth3, parms = parameters2)
+plot(equalclose)
+
+stable <- ode(y = state, times = times, func = growth3, parms = parameters3)
+plot(stable)
+
+unstable <- ode(y = state, times = times, func = growth3, parms = parameters4)
+plot(unstable)
+
+stable2 <- ode(y = state, times = times, func = growth3, parms = parameters5)
+plot(stable2)
+
+stable3 <- ode(y = state, times = times, func = growth3, parms = parameters6)
+plot(stable3)
+
+
 
 head(out)
 plot(out)
+head(equal)
+library(ggplot2)
+library(reshape2)
+
+head(equal)
+equal <- as.data.frame(equal)
+head(equal)
+equalmelt <- melt(equal, id.vars = "time")
+head(equalmelt)
+
+equalplot <- ggplot(equalmelt) + 
+  geom_line(aes(x = time, y = value, color = variable), size = 3) +
+  scale_colour_manual(values=c("black", "red"),
+  	name ="Plant", labels=c("Plant 1", "Plant 2")) +
+  xlab("Time") + ylab("Biomass") +
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(size=16),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(size=16))
+equalplot
+
+head(equalclose)
+equalclose <- as.data.frame(equalclose)
+head(equalclose)
+equalclosemelt <- melt(equalclose, id.vars = "time")
+head(equalclosemelt)
+
+equalcloseplot <- ggplot(equalclosemelt) + 
+  geom_line(aes(x = time, y = value, color = variable), size = 3) +
+  scale_colour_manual(values=c("black", "red"),
+  	name ="Plant", labels=c("Plant 1", "Plant 2")) +
+  xlab("Time") + ylab("Biomass") +
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(size=16),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(size=16))
+equalcloseplot
+
+
+head(stable)
+stable <- as.data.frame(stable)
+head(stable)
+stablemelt <- melt(stable, id.vars = "time")
+head(stablemelt)
+
+stableplot <- ggplot(stablemelt) + 
+  geom_line(aes(x = time, y = value, color = variable), size = 3) +
+  scale_colour_manual(values=c("black", "red"),
+  	name ="Plant", labels=c("Plant 1", "Plant 2")) +
+  xlab("Time") + ylab("Biomass") +
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(size=16),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(size=16))
+stableplot
+
+head(unstable)
+unstable <- as.data.frame(unstable)
+head(unstable)
+unstablemelt <- melt(unstable, id.vars = "time")
+head(unstablemelt)
+
+unstableplot <- ggplot(unstablemelt) + 
+  geom_line(aes(x = time, y = value, color = variable), size = 3) +
+  scale_colour_manual(values=c("black", "red"),
+  	name ="Plant", labels=c("Plant 1", "Plant 2")) +
+  xlab("Time") + ylab("Biomass") +
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(size=16),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(size=16))
+unstableplot
+
+
+head(stable2)
+stable2 <- as.data.frame(stable2)
+head(stable2)
+stable2melt <- melt(stable2, id.vars = "time")
+head(stable2melt)
+
+stable2plot <- ggplot(stable2melt) + 
+  geom_line(aes(x = time, y = value, color = variable), size = 3) +
+  scale_colour_manual(values=c("black", "red"),
+  	name ="Plant", labels=c("Plant 1", "Plant 2")) +
+  xlab("Time") + ylab("Biomass") +
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(size=16),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(size=16))
+stable2plot
+
+head(stable3)
+stable3 <- as.data.frame(stable3)
+head(stable3)
+stable3melt <- melt(stable3, id.vars = "time")
+head(stable3melt)
+
+stable3plot <- ggplot(stable3melt) + 
+  geom_line(aes(x = time, y = value, color = variable), size = 3) +
+  scale_colour_manual(values=c("black", "red"),
+  	name ="Plant", labels=c("Plant 1", "Plant 2")) +
+  xlab("Time") + ylab("Biomass") +
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(size=16),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(size=16))
+stable3plot
+
+
