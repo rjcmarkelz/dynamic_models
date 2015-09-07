@@ -44,9 +44,9 @@ plot(out)
 
 # two plant growth model
 
-parameters <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 0.7, q = 2)
+parameters <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 0.99, q = 2)
 state <- c(w1 = 0.20, w2 = 0.2)
-times <- seq(0, 1000, by = 0.01)
+times <- seq(0, 200, by = 0.1)
 growth2 <- function(t, state, parameters){
 	with(as.list(c(state, parameters)),{
 		# rate of change
@@ -217,5 +217,66 @@ stable3plot <- ggplot(stable3melt) +
            axis.title.y = element_text(face="bold", size=20),
            axis.text.y  = element_text(size=16))
 stable3plot
+
+#######
+#September
+#######
+
+parameters <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 1, q = 2)
+parameters_n <- c(k = 0.11, m = 0.01, g = 0.1, n = 0.9, C = 1, q = 2)
+
+
+parameters1 <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 1, b = 25)
+parameters2 <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 1, b = 10)
+parameters3 <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 0.5, b = 25)
+parameters4 <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 0.2, b = 10)
+parameters5 <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 0.2, b = 25)
+parameters6 <- c(k = 0.11, m = 0.01, g = 0.1, n = 1, C = 0.9, b = 25)
+
+
+
+state <- c(w1 = 0.20, w2 = 0.20)
+times <- seq(0, 400, by = 1)
+growth3 <- function(t, state, parameters){
+  with(as.list(c(state, parameters)),{
+    if ((1 - (b / (w1^(2/3) + w2^(2/3)))) >= 0)
+      theta <- (1 - (b / (w1^(2/3) + w2^(2/3))))
+    else 
+      theta <- 0
+    dw1 <- (w1/(w1 + C*theta*w2))*(k*w1/(1 + g*(w1^n))) - m*w1
+    dw2 <- (w2/(w2 + (theta*w1)/C))*(k*w2/(1 + g*(w2^n))) - m*w2
+
+    #return rate of change
+    list(c(dw1, dw2))
+  })
+}
+
+
+out <- ode(y = state, times = times, func = growth2, parms = parameters_n)
+head(out)
+plot(out)
+
+growth5 <- function(t, state, parameters){
+  with(as.list(c(state, parameters)),{
+    if ((1 - (b / (w1^(2/3) + w2^(2/3)))) >= 0)
+      theta <- (1 - (b / (w1^(2/3) + w2^(2/3))))
+    else 
+      theta <- 0
+    dw1 <- (w1/(w1 + C*theta*w2))*(k*w1/(1 + g*(w1^n))) - m1*w1
+    dw2 <- (w2/(w2 + (theta*w1)/C))*(k*w2/(1 + g*(w2^n))) - m2*w2
+
+    #return rate of change
+    list(c(dw1, dw2))
+  })
+}
+
+parameters1 <- c(k = 0.11, m1 = 0.01, m2 = 0.011, g = 0.1, n = 1, C = 1, b = 25)
+state <- c(w1 = 0.20, w2 = 0.20)
+times <- seq(0, 1000, by = 1)
+out <- ode(y = state, times = times, func = growth5, parms = parameters1)
+head(out)
+plot(out)
+
+
 
 
