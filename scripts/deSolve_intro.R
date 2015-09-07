@@ -262,20 +262,21 @@ growth5 <- function(t, state, parameters){
       theta <- (1 - (b / (w1^(2/3) + w2^(2/3))))
     else 
       theta <- 0
-    dw1 <- (w1/(w1 + C*theta*w2))*(k*w1/(1 + g*(w1^n))) - m1*w1
-    dw2 <- (w2/(w2 + (theta*w1)/C))*(k*w2/(1 + g*(w2^n))) - m2*w2
+    dw1 <- (w1/(w1 + C1*theta*w2))*(k*w1/(1 + g1*(w1^n1))) - m1*w1
+    dw2 <- (w2/(w2 + (theta*w1)/C1))*(k*w2/(1 + g2*(w2^n2))) - m2*w2
 
     #return rate of change
     list(c(dw1, dw2))
   })
 }
 
-parameters1 <- c(k = 0.11, m1 = 0.01, m2 = 0.011, g = 0.1, n = 1, C = 1, b = 25)
-state <- c(w1 = 0.20, w2 = 0.20)
+parameters1 <- c(k = 0.11, m1 = 0.01, m2 = 0.01, g1 = 0.1, g2 = 0.1, n1 = 1, n2 = 1, C1 = 0.8, b = 30)
+state <- c(w1 = 0.4, w2 = 0.1)
 times <- seq(0, 1000, by = 1)
 out <- ode(y = state, times = times, func = growth5, parms = parameters1)
 head(out)
 plot(out)
+
 
 
 
