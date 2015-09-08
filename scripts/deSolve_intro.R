@@ -270,13 +270,56 @@ growth5 <- function(t, state, parameters){
   })
 }
 
-parameters1 <- c(k = 0.11, m1 = 0.01, m2 = 0.01, g1 = 0.1, g2 = 0.1, n1 = 1, n2 = 1, C1 = 0.8, b = 30)
-state <- c(w1 = 0.4, w2 = 0.1)
+# compare this to HN non-crowded total biomass for these RILs
+parameters_1 <- c(k = 0.11, m1 = 0.01, m2 = 0.01, g1 = 0.1, g2 = 0.1, n1 = 1, n2 = 1, C1 = 1, b = 50)
+state <- c(w1 = 0.1, w2 = 0.1)
 times <- seq(0, 1000, by = 1)
-out <- ode(y = state, times = times, func = growth5, parms = parameters1)
-head(out)
-plot(out)
+out_1 <- ode(y = state, times = times, func = growth5, parms = parameters_1)
+head(out_1)
+plot(out_1)
 
+parameters_2 <- c(k = 0.11, m1 = 0.01, m2 = 0.01, g1 = 0.1, g2 = 0.1, n1 = 1, n2 = 1, C1 = 1, b = 20)
+state <- c(w1 = 0.1, w2 = 0.1)
+times <- seq(0, 1000, by = 1)
+out_2 <- ode(y = state, times = times, func = growth5, parms = parameters_2)
+head(out_2)
+plot(out_2)
+
+parameters_3 <- c(k = 0.11, m1 = 0.01, m2 = 0.01, g1 = 0.1, g2 = 0.1, n1 = 1, n2 = 1, C1 = 0.94, b = 20)
+state <- c(w1 = 0.1, w2 = 0.1)
+times <- seq(0, 1000, by = 1)
+out_3 <- ode(y = state, times = times, func = growth5, parms = parameters_3)
+head(out_3)
+plot(out_3)
+out_3[3]
+parameters_4 <- c(k = 0.11, m1 = 0.01, m2 = 0.01, g1 = 0.1, g2 = 0.1, n1 = 1, n2 = 1, C1 = 0.94, b = 12)
+state <- c(w1 = 0.1, w2 = 0.1)
+times <- seq(0, 1000, by = 1)
+out_4 <- ode(y = state, times = times, func = growth5, parms = parameters_4)
+head(out_4)
+plot(out_4)
+
+library(reshape2)
+library(ggplot2)
+out_1[,c(1,3)]
+out_all <- as.data.frame(cbind(out_1[,c(1,3)], out_2[,3], out_3[,3], out_4[,3]))
+head(out_all)
+colnames(out_all) <- paste(c("time", "UN_HN", "UN_LN", "CR_HN", "CR_LN"))
+head(out_all)
+
+out_allmelt <- melt(out_all, id.vars = "time")
+head(out_allmelt)
+
+out_allplot <- ggplot(out_allmelt) + 
+  geom_line(aes(x = time, y = value, color = variable), size = 3) +
+  scale_colour_manual(values=c("black", "red", "blue", "green"),
+    name ="Treatment", labels=c("UN_HN", "UN_LN", "CR_HN", "CR_HN")) +
+  xlab("Time") + ylab("Biomass Potential") +
+  theme(axis.title.x = element_text(face="bold", size=20),
+           axis.text.x  = element_text(size=16),
+           axis.title.y = element_text(face="bold", size=20),
+           axis.text.y  = element_text(size=16))
+out_allplot
 
 
 
