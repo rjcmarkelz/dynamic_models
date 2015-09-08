@@ -10,12 +10,10 @@ parameters <- c(Mc = 30, Mn = 62, J = 5*10^6,
     Kc = 0.05, Kn = 0.005, dr = 0.2, rhos = 1500, mu = 150, fc = 0.45, fn = 0.03, 
 	f1 = 0.7, Num = 25, Ep = 2.5, Y = 0.75, alphan = 0.5, gammash = 0.1, 
 	gammar = 0.01, Bn = 3*10^6)
-state <- c(Wc = 0.015, Wn = 0.004, Wsh = 0.2, Wr = 0.2, L = 0.8, Ns = 400)
+state <- c(Wc = 0.015, Wn = 0.004, Wsh = 0.2, Wr = 0.2, L = 0.8, Ns = 300)
 
-
-Nu <- Num*(1 - Ep*C)
-
-
+P  <- 43200*(12/44)*10
+P
 times <- seq(0, 100, by = 1)
 growth3 <- function(t, state, parameters){
 	with(as.list(c(state, parameters)),{

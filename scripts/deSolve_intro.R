@@ -293,7 +293,7 @@ head(out_3)
 plot(out_3)
 out_3[3]
 parameters_4 <- c(k = 0.11, m1 = 0.01, m2 = 0.01, g1 = 0.1, g2 = 0.1, n1 = 1, n2 = 1, C1 = 0.94, b = 12)
-state <- c(w1 = 0.1, w2 = 0.1)
+state <- c(w1 = 0.1, sw2 = 0.1)
 times <- seq(0, 1000, by = 1)
 out_4 <- ode(y = state, times = times, func = growth5, parms = parameters_4)
 head(out_4)
